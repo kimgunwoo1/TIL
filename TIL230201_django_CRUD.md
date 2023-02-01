@@ -33,9 +33,9 @@
     
     
     
-    \# myboard table
+    # myboard table
     
-    \# 컬럼명 : myname, mytitle, mycontent, mydate
+    # 컬럼명 : myname, mytitle, mycontent, mydate
     
     
     

@@ -24,6 +24,9 @@ git add .  # 모든 파일 add
 # Staging Area -> Commits
 git commit -m "commit message"
 
+# remote repository에 추가
+git push origin master
+
 # commits 목록 출력
 git log
 git log --oneline  # 한줄로 보기 옵션
@@ -66,7 +69,7 @@ git revert [commit ID]
 # 이전 커밋 목록 모두 출력
 git reflog
 ```
-       
+
 ### 4. branch, merge
 ```bash
 # 브랜치 목록 확인
