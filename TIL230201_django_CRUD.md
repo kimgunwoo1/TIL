@@ -182,9 +182,8 @@ DATABASES = {
 
     
     
-
     
-
+    
  2. 게시물 삽입
 
     urls.py
@@ -284,28 +283,6 @@ DATABASES = {
     from MyBoard.models import Myboard
 
     
-
- 4. 3
-
- 5. 3
-
- 6. 3
-
- 7. 3
-
- 8. 3
-
- 9. 3
-
- 10. 3
-
- 11. 3
-
- 12. 
-
-     
-
-
 
 
 
