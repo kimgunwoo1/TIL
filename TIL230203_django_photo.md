@@ -208,3 +208,69 @@ def photo_edit(request,pk):
     return render(request, 'photo/photo_post.html', {'form': form})
 ```
 
+
+
+## 5. 이미지 업로드
+
+(1) 환경설정
+
+settings.py
+
+```python
+INSTALLED_APPS = [    
+    'photo',
+]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR/'media'
+```
+
+index.html(template)
+
+```html
+<form action="{% url 'upload' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="uploadfile">
+        <br>
+        <input type="submit" value="업로드">
+    </form>
+```
+
+views.py
+
+```python
+def upload_proc(request):
+    upload_file = request.FILES['uploadfile']
+    upload = default_storage.save(upload_file.name,
+        ContentFile(upload_file.read()))
+    # return redirect('index')
+    return render(request,'download.html',{'filename':upload})
+    # default_storage : settings.py에서 설정한 MEDIA_ROOT = BASE_DIR/'media'
+    # upload_file.name : random을 화일명에 더해서 올림 (덮어쓰여지지 않도록)
+
+
+def download_proc(request,filename):
+    return HttpResponse(default_storage.open(filename).read(),
+        content_type='application/force-downlaod')
+
+        #content_type='application/force-downlaod' => 다운로드 할수 있도록 하는 타입
+```
+
+
+
+(2) forms.py -> imagefile 추가, image 삭제
+
+```python
+from django import forms
+from .models import Photo
+
+class PhotoForm(forms.ModelForm):
+    # image -> imagefile 변경
+    class Meta:
+        model = Photo
+        fields = ('title','author' ,
+        'imagefile',
+        'description','price')
+```
+
+
+
