@@ -23,11 +23,14 @@ urls.py
 ```python
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('polls/', include('polls.urls')),
-    # http://127.0.0.1:8000/polls/~~
+  	# http://127.0.0.1:8000/polls/~~
+    path('', RedirectView.as_view(url='polls/') ),
+    # 첫페이지에서 에러나지 않게 리다이렉트
 ]
 
 ```
@@ -84,18 +87,6 @@ python manage.py migrate
 
 ## 2. 질문리스트
 
-### tip. vscode에서 html template과 django template 동시에 사용하기
-
-> 파일 > 기본설정 > 설정
->
-> 검색 : emmet:include
->
-> 항목추가 클릭
->
-> 항목 : django-html
->
-> 값에 : html
-
 views.py
 
 ```python
@@ -126,6 +117,8 @@ templates/polls/index.html
     <strong>투표항목이 존재하지 않습니다.</strong>
 {% endif %}
 ```
+
+
 
 ## 3. 초이스 리스트
 
@@ -214,7 +207,28 @@ result.html
 
 
 
-### tip. sqlite
+## 6. shell 에서 DB에 자료 넣기
+
+```python
+# shell 실행
+python manage.py shell
+
+# 모델 import
+from polls.model import Question
+# 모델로 객체를 생성하고 지정한 필드에 값을 넣어준다.
+question = Question(question_text='선호하는 스마트폰은?')
+# 데이터를 정장한다.
+question.save()
+
+# 저장된 데이터를 확인한다.
+question id
+question.question_text
+
+```
+
+
+
+### tip 1. sqlite
 
 ```bash
 # Database 보기
@@ -230,3 +244,16 @@ update blog set description='my google blog' where id=2;
 .quit
 ```
 
+
+
+### tip 2. vscode에서 html template과 django template 동시에 사용하기
+
+> 파일 > 기본설정 > 설정
+>
+> 검색 : emmet:include
+>
+> 항목추가 클릭
+>
+> 항목 : django-html
+>
+> 값에 : html
