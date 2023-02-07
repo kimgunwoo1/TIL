@@ -8,16 +8,12 @@ cd mytodo
 python manage.py startapp todo
 ```
 
-
-
 settings.py
 
 ```python
 INSTALLED_APPS=[todo]
 TIME_ZONE = 'Asia/Seoul'
 ```
-
-
 
 models.py
 
@@ -62,8 +58,6 @@ urlpatterns = [
     path('', include('todo.urls')),
 ]
 ```
-
-
 
 todo/urls.py
 
@@ -322,3 +316,130 @@ def todo_delete(request, pk):
 
     return redirect('todo:todo_list')
 ```
+
+
+
+## 9. 파일업로드
+
+settings.py
+
+```python
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR/'media' #물리적 위치 -> 디렉토리 생성하기
+```
+
+models.py
+
+```python
+imagefile = models.ImageField(upload_to=settings.MEDIA_ROOT,blank=True, null=True)
+```
+
+```python
+python manage.py makemigrations
+python manage.py migrate
+```
+
+forms.py
+
+```python
+from django import forms
+from .models import Todo
+
+class TodoForm(forms.ModelForm):
+    class Meta:
+        model = Todo
+        fields = ('title', 'description','important','complete', 'imagefile')
+```
+
+views.py
+
+```python
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
+def todo_post(request):
+    if request.method == 'POST':
+        form = TodoForm(request.POST)
+        if form.is_valid():
+            todo = form.save(commit=False)
+            todo.save()
+
+            upload_file = request.FILES['imagefile']
+            upload = default_storage.save(upload_file.name, 
+            ContentFile(upload_file.read()))
+            # default_storage = /media, 화일 업로드 기능
+
+            Todo.objects.filter(id=todo.id).update(imagefile=upload)
+            #신규로 저장한 todo의 id를 참조해서 imagefile의 값을 update함
+            return redirect('todo:todo_list')
+    else:
+        form = TodoForm()
+    return render(request, 'todo/todo_post.html', {'form':form})
+```
+
+
+
+## 10. 페이지네이션
+
+
+
+```python
+python manage.py shell
+# 임의로 100페이지 생성코드
+from todo.models import Todo
+
+for i in range(1,100):
+     temp = Todo(title=i, description=i, complete=False, important=False)
+     temp.save()
+```
+
+views.py
+
+```python
+	def todo_list(request):
+    todos = Todo.objects.filter(complete=False)
+    paginator = Paginator(todos,5) #5개씩
+    page_num = request.GET.get('page','1') #page 값이 없으면 default 1
+
+    #페이지에 맞는 모델
+    page_obj = paginator.get_page(page_num)
+
+    return render(request, 'todo/todo_list.html', {'todos': page_obj})
+```
+
+todo_list.html
+
+```html
+    <!-- 처음으로 -->
+    <a href="?page=1">처음</a>
+    
+    <!-- 이전페이지  -->
+      {% if todos.has_previous %}
+        <a href="?page={{todos.previous_page_number}}">이전</a>
+      {% else %}
+        이전
+      {% endif %}
+
+		<!-- 페이징 -->
+    {% for i in todos.paginator.page_range %}
+      {% if todos.number >= i|add:-5 and todos.number <= i|add:+5 %}
+      <!-- django template filter https://cocook.tistory.com/61 -->
+        {% if todos.number == i %}
+            <span style="color:red">{{i}}</span>
+        {% else %}
+        <a href="?page={{i}}">{{i}}</a>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
+    <!-- 다음페이지  -->
+      {% if todos.has_next %}
+        <a href="?page={{todos.next_page_number}}">다음</a>
+      {% else %}
+        다음
+      {% endif %}
+
+    <!-- 끝으로 -->
+    <a href="?page={{todos.paginator.num_pages}}">끝</a> 
+```
+
