@@ -55,3 +55,77 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+
+
+
+
+lecture/users/admin.py
+
+```python
+from django.contrib import admin
+from .models import Member
+# Register your models here.
+
+admin.site.register(Member)
+```
+
+
+
+lecture/lecture/urls.py
+
+```python
+from django.contrib import admin
+from django.urls import path, include
+from django.views.generic.base import TemplateView
+from django.conf.urls.static import static
+from django.conf import settings
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('users/', include('users.urls')),
+    path('', TemplateView.as_view(template_name='index.html'), name='home'),
+    # http://127.0.0.1
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+		# js, css, image 정적 파일 관리 (Django가 webserver 역할을 함)
+
+```
+
+lecture/users/urls.py
+
+```python
+from django.urls import path, include
+from django.conf.urls.static import static
+from django.conf import settings
+from . import views
+
+app_name = 'users'
+urlpatterns = [
+    path('login', views.login, name='login' ),
+    
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
+lecture/users/views.py
+
+```python
+from django.shortcuts import render
+
+# Create your views here.
+def login(request):
+    pass
+```
+
+
+
+디렉토리 생성
+
+/lecture/static/css
+
+/lecture/static/js
+
+부트스트랩
+
+```
+pip install django-bootstrap4
+```
+
