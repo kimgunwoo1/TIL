@@ -123,6 +123,8 @@ def login(request):
 
 /lecture/static/js
 
+<img src = "https://github.com/kimgunwoo1/TIL/blob/master/image/directory.png?raw=true" width="240px">
+
 부트스트랩
 
 ```
